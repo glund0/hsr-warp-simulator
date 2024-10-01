@@ -343,4 +343,8 @@ button {
     .result-header-text {
         font-size: 18px;
     }
+
+    .input-div-label {
+        flex: 0.6;
+    }
 }
