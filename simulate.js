@@ -81,9 +81,11 @@ function createResultNode(pullArray, simResult, prevCount) {
     chanceDiv.className = "result-chance"
 
     pct = `${(simResult["chance"] * 100).toFixed(2)}%`
+    bar_chance = simResult["chance"] > 0.8 ? 1 : simResult["chance"] * 1.25;
+    bar_pct = `${(bar_chance * 100).toFixed(2)}%`
     percentDiv = document.createElement("div");
     percentDiv.className = "chance-bar";
-    percentDiv.style["width"] = pct
+    percentDiv.style["width"] = bar_pct
 
     percentText = document.createTextNode(pct);
 
