@@ -57,7 +57,7 @@ section {
 .input-group {
     margin-bottom: 10px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     position: relative;
 }
@@ -69,7 +69,7 @@ section {
 }
 
 .input-group input[type="number"] {
-    flex: 0.7; /* Adjust input width to align */
+    flex: 0.3; /* Adjust input width to align */
     padding: 5px;
     border: 1px solid #6068a5; /* Purple border */
     border-radius: 4px;
@@ -213,7 +213,7 @@ button {
 
 .result-header-received {
     position: relative;
-    left: 5%;
+    left: 2%;
 }
 
 .result-header-chance {
@@ -223,12 +223,19 @@ button {
 
 .result-header-tickets {
     position: relative;
-    left: 50%;
+    right: 2%;
+    margin-left: auto;
 }
 
 .result-header-text {
     font-size: 24px;
     font-weight: bold;
+}
+
+.results-group {
+    display: table;
+    background-color: #3a3a50;
+    width: 100%;
 }
 
 /* Result Item Container */
@@ -238,8 +245,9 @@ button {
     margin-bottom: 10px;
     border: 1px solid #6068a5; /* Purple border */
     border-radius: 4px;
-    display: flex;
+    display: table-row;
     flex-direction: row;
+    vertical-align: middle;
     gap: 10px;
 }
 
@@ -269,8 +277,8 @@ button {
     justify-content: space-between;
     gap: 20px;
     width: 60%;
-    top: 50%;
     display: table-cell;
+    vertical-align: middle;
 }
 
 /* Percentage Chance Label and Bar */
@@ -279,10 +287,11 @@ button {
     position: relative;
     top: 15%;
     gap: 10px;
+    padding: 10px;
 }
 
 .chance-bar {
-    background-color: #52a0e8; /* Blue bar color */
+    background-color: #937fdb;
     height: 40px;
     border-radius: 4px;
     max-width: 100%;
@@ -296,6 +305,7 @@ button {
     gap: 10px;
     width: 20%;
     display: table-cell;
+    vertical-align: middle;
 }
 
 .tickets-used {
@@ -305,27 +315,35 @@ button {
     color: #f4f4f4;
 }
 
+.license {
+    border: 10px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
 
 /* Responsive Design */
 @media (max-width: 600px) {
     .input-group {
-        flex-direction: column;
+        flex-direction: row;
         align-items: flex-start;
     }
 
-    .input-group label,
-    .input-group input {
-        flex: none;
-        width: 100%;
-        margin: 0 0 5px 0;
+    .input-group label {
+        flex: 0.2;
     }
 
     .button-group {
-        flex-direction: column;
+        flex-direction: row;
     }
 
     button {
         margin-bottom: 10px;
         width: 100%;
+    }
+
+    .result-header-text {
+        font-size: 18px;
     }
 }

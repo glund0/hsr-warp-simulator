@@ -54,13 +54,16 @@ function showResults(pullArray, simResults) {
         outputDiv.removeChild(outputDiv.lastChild);
     }
 
-    simResults.forEach((simResult) => {
-        resultNode = createResultNode(pullArray, simResult);
+    prevCount = -1;
+    for(let i = 0; i < simResults.length; i++) {
+        let simResult = simResults[i];
+        resultNode = createResultNode(pullArray, simResult, prevCount);
         outputDiv.appendChild(resultNode);
-    });
+        prevCount = simResult["ticketsUsed"];
+    }
 }
 
-function createResultNode(pullArray, simResult) {
+function createResultNode(pullArray, simResult, prevCount) {
     resultNode = document.createElement("div");
     resultNode.className = "result-item";
 
@@ -95,7 +98,14 @@ function createResultNode(pullArray, simResult) {
     ticketSpan = document.createElement("span");
     ticketSpan.className = "tickets-used";
 
-    ticketText = document.createTextNode(simResult["ticketsUsed"]);
+    ticketStr = `${simResult["ticketsUsed"]}`;
+    if (prevCount == -1) {
+        ticketStr = `${simResult["ticketsUsed"]} or less`;
+    }
+    else if (prevCount != simResult["ticketsUsed"]) {
+        ticketStr = `${simResult["ticketsUsed"]} to ${prevCount + 1}`;
+    }
+    ticketText = document.createTextNode(ticketStr);
 
     ticketSpan.appendChild(ticketText);
     ticketDiv.appendChild(ticketSpan);
