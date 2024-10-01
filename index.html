@@ -1,0 +1,82 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>HSR Warp Simulator</title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <script src="input.js"></script>
+        <script src="simulate.js"></script>
+        <div class="container">
+            <section class="title-section">
+                <h1 class="title-h1">HSR Warp Simulator</h1>
+            </section>
+
+            <!-- Input Section -->
+            <section class="input-section">
+                <h2>Input Parameters</h2>
+    
+                <div class="input-group">
+                    <label for="tickets">Number of Tickets:</label>
+                    <input type="number" id="input_tickets" name="tickets" min="1" />
+                </div>
+    
+                <div class="input-group">
+                    <label for="character-pity">Character Pity:</label>
+                    <input type="number" id="input_char_pity" name="character-pity" min="0" />
+                    <label class="inline-label">
+                        <input type="checkbox" id="char_guarantee" name="character-guarantee" />
+                        Guarantee
+                    </label>
+                </div>
+    
+                <div class="input-group">
+                    <label for="lightcone-pity">Light Cone Pity:</label>
+                    <input type="number" id="input_lc_pity" name="lightcone-pity" min="0" />
+                    <label class="inline-label">
+                        <input type="checkbox" id="lc_guarantee" name="lightcone-guarantee" />
+                        Guarantee
+                    </label>
+                </div>
+            </section>
+    
+            <!-- Add Character/Light Cone Section -->
+            <section class="add-section">
+                <div class="add-header">
+                    <h2>Choose what you want to pull</h2>
+                </div>
+                <div class="button-group">
+                    <button id="add-character" onclick="add_char();">Add Character</button>
+                    <button id="add-lightcone" onclick="add_lc();">Add Light Cone</button>
+                </div>
+                <div class="added-items-container-container">
+                    <div class="added-items-container" id="input_types">
+                    </div>
+                </div>
+            </section>
+    
+            <!-- Simulate/Reset Section -->
+            <section class="control-section">
+                <div class="button-group">
+                    <button id="simulate" onclick="input_data = get_input_data(); if (input_data !== null) {results = pullMultiple(input_data); var simResults = analyzeSections(results, input_data); showResults(input_data['pullTypes'], simResults);}">Simulate</button>
+                    <button id="reset" onclick="reset_input();">Reset</button>
+                </div>
+            </section>
+    
+            <!-- Simulation Results Section -->
+            <div class="result-header" id="results_header" style="display: none">
+                <div class="result-header-received">
+                    <span class="result-header-text">Received</span>
+                </div>
+                <div class="result-header-chance">
+                    <span class="result-header-text"">Chance</span>
+                </div>
+                <div class="result-header-tickets">
+                    <span class="result-header-text">Tickets Used</span>
+                </div>
+            </div>
+            <div id="results"></div> 
+        </div>
+    </body>
+</html>
