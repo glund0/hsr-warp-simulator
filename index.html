@@ -1,16 +1,59 @@
+<!DOCTYPE html>
 <html>
     <head>
+        <!--
+            This file is part of HSR Warp Simulator.
+            HSR Warp Simulator is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+            HSR Warp Simulator is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+            You should have received a copy of the GNU General Public License along with HSR Warp Simulator. If not, see <https://www.gnu.org/licenses/>.  
+        -->
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>HSR Warp Simulator</title>
         <link rel="stylesheet" href="styles.css">
+        <link rel="preload" href="character_icon.png" as="image">
+        <link rel="preload" href="lightcone_icon.png" as="image">
     </head>
     <body>
         <script src="input.js"></script>
         <script src="simulate.js"></script>
+        <script src="info.js"></script>
+        <script>window.onclick = closeInfoWindow;</script>
         <div class="container">
             <section class="title-section">
                 <h1 class="title-h1">HSR Warp Simulator</h1>
+                <div class="info-button" onclick="openInfo();">&#x24D8;</div>
+
+                <div id="info-modal" class="info-modal">
+                    <div class="info-modal-close-div">
+                        <span class="info-close" id="info-close" onclick="closeInfo();">&times;</span>
+                    </div>
+                    <!-- Modal content -->
+                    <div class="modal-content">
+                      <h1 style="font-size: 36px;">Welcome to the HSR Warp Simulator</h1>
+                      <h2>Why does this exist?</h2>
+                      <p>There are existing calculators, but they had two issues that made them unsatisfactory</p>
+                      <ol class="modal-list">
+                        <li>They use the offical Hoyo numbers however, from the <a href="https://starrailstation.com/en">Star Rail Station</a> data, the character 50/50 is more like 56.25%, the light cone 75/25 is 78.25% and pity for charaters starts at pull 74</li>
+                        <li>They show you the overall chance, but don't give a breakdown of likely scenarios</li>
+                      </ol>
+                      <h2>How to Use</h2>
+                      <ol class="modal-list">
+                        <li>Enter the number of tickets you have to use for your warps</li>
+                        <li>(Optional) Enter your current pities and if you have any guarantees</li>
+                        <li>Use the "Add Character" and "Add Light Cone" buttons to to pick what you want to pull for and the order you plan to pull.</li>
+                        <li>Hit the "Simulate" button and see the likely results</li>
+                      </ol>
+                      <h2>I found a bug, how should should I report it?</h2>
+                      <p>Go to the HSR Warp Simulator github page: <a href="https://github.com/glund0/hsr-warp-simulator">HSR Warp Simulator Github</a>. On the issues tab, you can create a new issue.  Please list the steps you did to cause the error.</p>
+                      <h2>Legal Stuff</h2>
+                      <p>Copyright George Lund 2024</p>
+                      <p>HSR Warp Simulator is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
+                      <p>HSR Warp Simulator is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
+                      <p>You should have received a copy of the GNU General Public License along with HSR Warp Simulator. If not, see <a href="https://www.gnu.org/licenses">GNU GPL v3</a>. </p>
+                    </div>
+                  
+                  </div>
             </section>
 
             <!-- Input Section -->
@@ -19,16 +62,21 @@
     
                 <div class="input-group">
                     <div class="input-div-label">
-                        <span class="input-group-label">Number of Tickets:</span>
+                        <span class="input-group-label">Number&nbsp;of&nbsp;Tickets:</span>
                     </div>
                     <div class="input-div-input">
                         <input type="number" id="input_tickets" class="input-group-num-input" name="tickets" min="1" />
+                    </div>
+                    <div class=""input-div-guar>
+                        <label class="inline-label" style="display: none">
+                            <input type="checkbox" id="char_guarantee" name="character-guarantee" />
+                        </label>
                     </div>
                 </div>
     
                 <div class="input-group">
                     <div class="input-div-label">
-                        <span class="input-group-label">Character Pity:</span>
+                        <span class="input-group-label">Character&nbsp;Pity:</span>
                     </div>
                     <div class="input-div-input">
                         <input type="number" id="input_char_pity" class="input-group-num-input" name="character-pity" min="0" />
@@ -43,7 +91,7 @@
     
                 <div class="input-group">
                     <div class="input-div-label">
-                        <span class="input-group-label">Light Cone Pity:</span>
+                        <span class="input-group-label">Light&nbsp;Cone&nbsp;Pity:</span>
                     </div>
                     <div class="input-div-input">
                         <input type="number" id="input_lc_pity" class="input-group-num-input" name="lightcone-pity" min="0" />

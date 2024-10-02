@@ -1,8 +1,23 @@
+/*
+    This file is part of HSR Warp Simulator.
+    HSR Warp Simulator is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+    HSR Warp Simulator is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License along with HSR Warp Simulator. If not, see <https://www.gnu.org/licenses/>.  
+*/
 /* Global Styles */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+a:link{color:inherit}
+a:active{color:inherit}
+a:visited{color:inherit}
+a:hover{color:inherit}
+
+h2 {
+    margin-top: 10px;
 }
 
 html {    height: 100%;    }
@@ -40,11 +55,66 @@ section {
     font-size: 30px;
     color: #f4f4f4; /* Light text color */
     display: flex;
+    border-radius: 4px;
 }
 
 .title-h1 {
     font-size: 30px;
     color: #f4f4f4; /* Light text color */
+}
+
+.info-button {
+    background-color: #4b5291;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 24px;
+    text-align: center;
+    line-height: 20px;
+    
+}
+
+/* The Modal (background) */
+.info-modal {
+    top: 0%; 
+    position: fixed;  /* Fixed position to stay in view even on scroll */
+    display: none; /* Hidden by default */
+    z-index: 1; /* Sit on top */
+    position: fixed; /* Stay in place */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: #2b2b40; /* Dark container background */
+    border-radius: 8px;
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh;
+    align-items: center;
+    flex-direction: column;
+}
+
+.info-modal-close-div {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+  
+/* Modal Content/Box */
+.modal-content {
+    border: 1px solid #6068a5; /* Purple border */
+    font-size: 16px;
+    border-radius: 8px;
+    width: 96%;
+}
+
+.modal-list {
+    padding-left: 10%;
+}
+
+/* The Close Button */
+.info-close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
 }
 
 /* Input Section */
@@ -345,6 +415,14 @@ button {
     }
 
     .input-div-label {
-        flex: 0.6;
+        flex: 0 0 0.4;
+    }
+
+    .input-group-label {
+        width: 100px;
+    }
+
+    .input-div-input {
+        align-self: left;
     }
 }
