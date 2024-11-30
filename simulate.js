@@ -45,7 +45,7 @@ function showResults(pullArray, simResults) {
 
     for(let i = 0; i < simResults.length; i++) {
         let simResult = simResults[i];
-        if (simResult["chance"] < 0.005) {
+        if (simResult["chance"] < 0.001) {
             continue;
         }
         resultNode = createResultNode(pullArray, simResult);
