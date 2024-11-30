@@ -4,10 +4,15 @@
     HSR Warp Simulator is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
     You should have received a copy of the GNU General Public License along with HSR Warp Simulator. If not, see <https://www.gnu.org/licenses/>.  
 */
-let char5050 = 0.5625;
-let charPityStart = 74
-let lc5050 = 0.7825;
-let lcPityStart = 66;
+let charPity5050 = {"starrailstation": 0.5625, "hsrwarp": 0.5}
+let charPityStart = {"starrailstation": 73, "hsrwarp": 75}
+let charPityRamp = {"starrailstation": 0.06, "hsrwarp": 0.06}
+let lcPity5050 = {"starrailstation": 0.7825, "hsrwarp":0.75}
+let lcPityStart = {"starrailstation": 65, "hsrwarp": 65}
+let lcPityRamp = {"starrailstation": 0.07, "hsrwarp": 0.06}
+
+var module = module || {};
+module.exports = { analyzeSections,  pullMultiple, showResults, pullCharacter, checkPull, checkLcPull, pullLc};
 
 function analyzeSections(results, inputData) {
     let totalTickets = inputData["tickets"];
@@ -142,6 +147,10 @@ function pullMultiple(input_data) {
     let pullArray = input_data["pullTypes"];
     let mpTicketsAvail = input_data["tickets"];
     let numSims = input_data["numSims"];
+    let pityKey = "starrailstation";
+    if (input_data["pityKey"] !== undefined && input_data["pityKey"] !== null) {
+        pityKey = input_data["pityKey"];
+    }
     const results = Array.from({ length: pullArray.length + 1 }, () => ({ ticketsUsed: [] }));
     let minTicketsUsed = mpTicketsAvail + 1;
     let maxTicketsUsed = 0;
@@ -158,11 +167,11 @@ function pullMultiple(input_data) {
             let usedTickets, gotLimited, wonSplit, luckyPull;
 
             if (pullType === "C") {
-                ({ usedTickets, gotLimited, wonSplit, luckyPull } = pullCharacter(mpTickets, simCharPity, simCharGuarantee));
+                ({ usedTickets, gotLimited, wonSplit, luckyPull } = pullCharacter(mpTickets, simCharPity, simCharGuarantee, pityKey));
                 simCharGuarantee = false;
                 simCharPity = 0;
             } else if (pullType === "L") {
-                ({ usedTickets, gotLimited, wonSplit, luckyPull } = pullLc(mpTickets, simLCPity, simLCGuarantee));
+                ({ usedTickets, gotLimited, wonSplit, luckyPull } = pullLc(mpTickets, simLCPity, simLCGuarantee, pityKey));
                 simLCGuarantee = false;
                 simLCPity = 0;
             } else {
@@ -193,7 +202,7 @@ function pullMultiple(input_data) {
     return results;
 }
 
-function pullCharacter(tickets, pity, guaranteed = false) {
+function pullCharacter(tickets, pity, guaranteed = false, pityKey = "starrailstation") {
     let usedTickets = 0;
     let pullCount = pity;
     let luckyPull = false;
@@ -204,7 +213,7 @@ function pullCharacter(tickets, pity, guaranteed = false) {
         pullCount += 1;
         usedTickets += 1;
         tickets -= 1;
-        const { pulledChar, isLucky } = checkPull(pullCount);
+        const { pulledChar, isLucky } = checkPull(pullCount, pityKey);
         
         if (pulledChar) {
             if (isLucky) {
@@ -214,7 +223,7 @@ function pullCharacter(tickets, pity, guaranteed = false) {
                 gotLimited = true;
             } else {
                 const charRng = Math.random();
-                if (charRng <= char5050) {
+                if (charRng <= charPity5050[pityKey]) {
                     won5050 = true;
                     gotLimited = true;
                 }
@@ -230,9 +239,9 @@ function pullCharacter(tickets, pity, guaranteed = false) {
     return { usedTickets, gotLimited, won5050, luckyPull };
 }
 
-function checkPull(pullCount) {
+function checkPull(pullCount, pityKey="starrailstation") {
     const pullRng = Math.random();
-    if (pullCount < charPityStart) {
+    if (pullCount <= charPityStart[pityKey]) {
         if (pullRng <= 0.006) {
             return { pulledChar: true, isLucky: true };
         } else {
@@ -241,7 +250,7 @@ function checkPull(pullCount) {
     } else {
         let pullChance;
         if (pullCount < 90) {
-            pullChance = 0.006 + ((pullCount - (charPityStart - 1)) * 0.06);
+            pullChance = 0.006 + ((pullCount - charPityStart[pityKey]) * charPityRamp[pityKey]);
         } else {
             pullChance = 1;
         }
@@ -253,7 +262,7 @@ function checkPull(pullCount) {
     }
 }
 
-function pullLc(tickets, pity, guaranteed = false) {
+function pullLc(tickets, pity, guaranteed = false, pityKey = "starrailstation") {
     let usedTickets = 0;
     let pullCount = pity;
     let luckyPull = false;
@@ -264,7 +273,7 @@ function pullLc(tickets, pity, guaranteed = false) {
         pullCount += 1;
         usedTickets += 1;
         tickets -= 1;
-        const { pulledLc, isLucky } = checkLcPull(pullCount);
+        const { pulledLc, isLucky } = checkLcPull(pullCount, pityKey);
 
         if (pulledLc) {
             if (isLucky) {
@@ -274,7 +283,7 @@ function pullLc(tickets, pity, guaranteed = false) {
                 gotLimited = true;
             } else {
                 const charRng = Math.random();
-                if (charRng <= lc5050) {
+                if (charRng <= lcPity5050[pityKey]) {
                     won7525 = true;
                     gotLimited = true;
                 }
@@ -290,9 +299,9 @@ function pullLc(tickets, pity, guaranteed = false) {
     return { usedTickets, gotLimited, won7525, luckyPull };
 }
 
-function checkLcPull(pullCount) {
+function checkLcPull(pullCount, pityKey = "starrailstation") {
     const pullRng = Math.random();
-    if (pullCount < lcPityStart) {
+    if (pullCount <= lcPityStart[pityKey]) {
         if (pullRng <= 0.008) {
             return { pulledLc: true, isLucky: true };
         } else {
@@ -301,7 +310,7 @@ function checkLcPull(pullCount) {
     } else {
         let pullChance;
         if (pullCount < 80) {
-            pullChance = 0.008 + ((pullCount - (lcPityStart - 1)) * 0.07);
+            pullChance = 0.008 + ((pullCount - lcPityStart[pityKey]) * lcPityRamp[pityKey]);
         } else {
             pullChance = 1;
         }
