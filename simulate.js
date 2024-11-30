@@ -12,51 +12,152 @@ let lcPityStart = {"starrailstation": 65, "hsrwarp": 65}
 let lcPityRamp = {"starrailstation": 0.07, "hsrwarp": 0.06}
 
 var module = module || {};
-module.exports = { analyzeSections,  pullMultiple, showResults, pullCharacter, checkPull, checkLcPull, pullLc};
+module.exports = { analyzeSections,  pullMultiple, showResults, pullCharacter, checkPull, checkLcPull, pullLc, binResults};
 
 function analyzeSections(results, inputData) {
     let totalTickets = inputData["tickets"];
     let numAttempts = inputData["numSims"];
-    let minNeeded = numAttempts/100;
-    let simResults = [];
+
+    var simResults = []
     for (var i = results.length - 1; i >= 0; i--) {
-        var result = results[i];
-        const ticketsUsed = result.ticketsUsed;
-        const numBins = Math.floor(totalTickets / 5);
-        const binArray = Array(numBins).fill(0);
-
-        ticketsUsed.forEach(tickets => {
-            const bin = Math.floor((tickets - 1) / 5);
-            binArray[bin] += 1;
-        });
-
-        let totalTicketsUsed = 0;
-        let currentMax = 0;
-
-        binArray.forEach((binCount, j) => {
-            if (totalTicketsUsed === 0 && binCount === 0) {
-                return;
+        resultData = results[i];
+        var maxTickets = 0;
+        var sumTickets = 0;
+        for(var ticketsUsed of resultData["ticketsUsed"]) {
+            sumTickets += ticketsUsed;
+            if (ticketsUsed > maxTickets) {
+                maxTickets = ticketsUsed;
             }
-            totalTicketsUsed += binCount;
-            if (binCount > (currentMax * 0.8)) {
-                currentMax = binCount;
-            } else if (totalTicketsUsed >= minNeeded) {
-                console.log(`Total pulled ${i}: chance: ${totalTicketsUsed / numAttempts} tickets used: ${j * 5}`);
-                simResults.push({"numPulled": i, "chance": totalTicketsUsed / numAttempts, "ticketsUsed":j * 5});
-                totalTicketsUsed = 0;
-                currentMax = 0;
-            }
-        });
-
-        if (totalTicketsUsed > 0) {
-            console.log(`Total pulled ${i}: chance: ${totalTicketsUsed / numAttempts} tickets used: ${(numBins) * 5}`);
-            simResults.push({"numPulled": i, "chance": totalTicketsUsed / numAttempts, "ticketsUsed":(numBins) * 5});
         }
+        simResults.push({"numPulled": i, "chance": resultData["ticketsUsed"].length / numAttempts, "maxTicketsUsed":maxTickets, "avgTicketsUsed": sumTickets/resultData["ticketsUsed"].length});
     }
     return simResults;
 }
 
 function showResults(pullArray, simResults) {
+    headerDiv = document.getElementById("results_header");
+    headerDiv.style["display"] = "flex";
+
+    outputDiv = document.getElementById("results");
+    while(outputDiv.firstChild) {
+        outputDiv.removeChild(outputDiv.lastChild);
+    }
+
+    for(let i = 0; i < simResults.length; i++) {
+        let simResult = simResults[i];
+        if (simResult["chance"] < 0.005) {
+            continue;
+        }
+        resultNode = createResultNode(pullArray, simResult);
+        outputDiv.appendChild(resultNode);
+        prevCount = simResult["ticketsUsed"];
+    }
+}
+
+function createResultNode(pullArray, simResult) {
+    resultNode = document.createElement("div");
+    resultNode.className = "result-item";
+
+    imageDiv = document.createElement("div");
+    imageDiv.className = "result-icons";
+    for(var i = 0; i < simResult["numPulled"]; i++) {
+        addResultImg(imageDiv, pullArray[i]);
+    }
+    resultNode.appendChild(imageDiv);
+
+    displayDiv = document.createElement("div");
+    displayDiv.className = "result-details";
+
+    chanceDiv = document.createElement("div");
+    chanceDiv.className = "result-chance"
+
+    pct = `${(simResult["chance"] * 100).toFixed(2)}%`
+    bar_chance = simResult["chance"] > 0.8 ? 1 : simResult["chance"] * 1.25;
+    bar_pct = `${(bar_chance * 100).toFixed(2)}%`
+    percentDiv = document.createElement("div");
+    percentDiv.className = "chance-bar";
+    percentDiv.style["width"] = bar_pct
+
+    percentText = document.createTextNode(pct);
+
+    percentDiv.appendChild(percentText);
+    chanceDiv.appendChild(percentDiv);
+    displayDiv.appendChild(chanceDiv);
+    resultNode.appendChild(displayDiv);
+
+    ticketDiv = document.createElement("div");
+    ticketDiv.className = "result-tickets";
+
+    ticketSpan = document.createElement("span");
+    ticketSpan.className = "tickets-used";
+
+    ticketStr = `Avg: ${Math.round(simResult["avgTicketsUsed"])} Max ${simResult["maxTicketsUsed"]}`;
+    if (simResult["avgTicketsUsed"] === simResult["maxTicketsUsed"]) {
+        ticketStr = `${simResult["maxTicketsUsed"]}`;
+    }
+    ticketText = document.createTextNode(ticketStr);
+
+    ticketSpan.appendChild(ticketText);
+    ticketDiv.appendChild(ticketSpan);
+    resultNode.appendChild(ticketDiv);
+
+    return resultNode;
+}
+
+function analyzeSectionsComplex(results, inputData) {
+    let totalTickets = inputData["tickets"];
+    let numAttempts = inputData["numSims"];
+    let minNeeded = numAttempts/100;
+    let simResults = [];
+    let binnedResults = binResults(results, totalTickets);
+    let first = true;
+    for (var i = binnedResults.length - 1; i >= 0; i--) {
+        let totalRuns = 0;
+        let currentMax = 0;
+        binArray = binnedResults[i];
+        if (first) {
+            console.log(binArray);
+            first = false;
+        }
+        binArray.forEach((binCount, j) => {
+            if (totalRuns === 0 && binCount === 0) {
+                return;
+            }
+            totalRuns += binCount;
+            if (binCount > (currentMax * 0.9)) {
+                currentMax = binCount;
+            } else if (totalRuns >= minNeeded) {
+                console.log(`Total pulled ${i}: chance: ${totalRuns/numAttempts} tickets used: ${(j + 1) * 5}`);
+                simResults.push({"numPulled": i, "chance": totalRuns / numAttempts, "ticketsUsed":(j + 1) * 5});
+                totalRuns = 0;
+                currentMax = 0;
+            }
+        });
+
+        if (totalRuns > 0) {
+            console.log(`Total pulled ${i}: chance: ${totalRuns / numAttempts} tickets used: ${(numBins) * 5}`);
+            simResults.push({"numPulled": i, "chance": totalRuns / numAttempts, "ticketsUsed":(numBins) * 5});
+        }
+    }
+    return simResults;
+}
+
+function binResults(results, totalTickets) {
+    binnedResults = []
+    numBins = Math.ceil(totalTickets / 5);
+    for(var resultNum = 0; resultNum < results.length; resultNum++) {
+        result = results[resultNum];
+        binResult = Array(numBins).fill(0);
+        for(var ticketsUsed of result["ticketsUsed"]) {
+            bin = Math.floor((ticketsUsed - 1)/5);
+            binResult[bin] += 1;
+        }
+        binnedResults.push(binResult);
+    }
+    return binnedResults;
+}
+
+function showResultsComplex(pullArray, simResults) {
     headerDiv = document.getElementById("results_header");
     headerDiv.style["display"] = "flex";
 
@@ -74,7 +175,7 @@ function showResults(pullArray, simResults) {
     }
 }
 
-function createResultNode(pullArray, simResult, prevCount) {
+function createResultNodeComplex(pullArray, simResult, prevCount) {
     resultNode = document.createElement("div");
     resultNode.className = "result-item";
 

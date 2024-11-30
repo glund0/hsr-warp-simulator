@@ -398,6 +398,8 @@ button {
     top: 35%;
     font-size: 18px;
     color: #f4f4f4;
+    display: flex;
+    justify-content: center;
 }
 
 .license {
